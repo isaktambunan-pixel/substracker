@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Substracker — Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#1a4db8,#00c8e0);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:900;color:white;">S</div>
+      <h1>Substracker</h1>
+      <p>Kelola semua langganan kamu di satu tempat</p>
+    </div>
+
+    <h2>Masuk</h2>
+    <p class="subtitle">Selamat datang kembali!</p>
+
+    <div id="login-alert" class="alert alert-error"></div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="email@kamu.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="••••••••">
+    </div>
+    <a href="forgot-password.html" class="forgot-link">Lupa password?</a>
+
+    <button class="btn-primary" id="btn-login">Masuk</button>
+
+    <div class="auth-footer">
+      Belum punya akun? <a href="register.html">Daftar sekarang</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      auth, redirectIfLoggedIn,
+      signInWithEmailAndPassword, showAlert
+    } from './js/app.js';
+
+    // Kalau sudah login, langsung ke dashboard
+    await redirectIfLoggedIn('dashboard.html');
+
+    document.getElementById('btn-login').addEventListener('click', doLogin);
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    async function doLogin() {
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        return showAlert('login-alert', 'Isi semua kolom ya.');
+      }
+
+      const btn = document.getElementById('btn-login');
+      btn.disabled     = true;
+      btn.textContent  = 'Masuk...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        const msg = err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found'
+          ? 'Email atau password salah.'
+          : err.code === 'auth/too-many-requests'
+          ? 'Terlalu banyak percobaan. Coba lagi nanti.'
+          : 'Gagal login. Coba lagi.';
+        showAlert('login-alert', msg);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Masuk';
+      }
+    }
+  </script>
+</body>
+</html>
