@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Substracker — Daftar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#1a4db8,#00c8e0);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:900;color:white;">S</div>
+      <h1>Substracker</h1>
+      <p>Kelola semua langganan kamu di satu tempat</p>
+    </div>
+
+    <h2>Buat akun</h2>
+    <p class="subtitle">Gratis selamanya, tanpa kartu kredit</p>
+
+    <div id="reg-alert" class="alert alert-error"></div>
+    <div id="reg-success" class="alert alert-success"></div>
+
+    <div class="form-group">
+      <label>Nama lengkap</label>
+      <input type="text" id="reg-name" placeholder="Nama kamu">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="reg-email" placeholder="email@kamu.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="reg-password" placeholder="Minimal 6 karakter">
+    </div>
+    <div class="form-group">
+      <label>Konfirmasi password</label>
+      <input type="password" id="reg-confirm" placeholder="Ulangi password">
+    </div>
+
+    <button class="btn-primary" onclick="doRegister()">Buat akun</button>
+
+    <div class="auth-footer">
+      Sudah punya akun? <a href="index.html">Masuk</a>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if (DB.getCurrentUser()) window.location.href = 'dashboard.html';
+
+    function doRegister() {
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+
+      if (!name || !email || !password || !confirm) return showAlert('reg-alert', 'Isi semua kolom ya.');
+      if (password.length < 6) return showAlert('reg-alert', 'Password minimal 6 karakter.');
+      if (password !== confirm) return showAlert('reg-alert', 'Password tidak cocok.');
+
+      const result = register(name, email, password);
+      if (!result.ok) return showAlert('reg-alert', result.msg);
+
+      const user = DB.getCurrentUser();
+      seedDemoData(user.id);
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>
